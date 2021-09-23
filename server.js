@@ -1,50 +1,38 @@
-const express = require("express");
-const path = require('path');
-const fs = require("fs");
+// ==============================================================================
+// DEPENDENCIES
+// Series of npm packages that we will use to give our server useful functionality
+// ==============================================================================
+var express = require("express");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// ==============================================================================
+// EXPRESS CONFIGURATION
+// This sets up the basic properties for our express server
+// ==============================================================================
 
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true}));
+// Tells node that we are creating an "express" server
+var app = express();
+
+// Sets an initial port. We"ll use this later in our listener
+var PORT = process.env.PORT || 3000;
+
+// Sets up the Express app to handle data parsing
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("public"));
+// ================================================================================
+// ROUTER
+// The below points our server to a series of "route" files.
+// These routes give our server a "map" of how to respond when users visit or request data from various URLs.
+// ================================================================================
 
-//Starts server
+require("./routes/apiRoutes")(app);
+require("./routes/htmlRoutes")(app);
+
+// =============================================================================
+// LISTENER
+// The below code effectively "starts" our server
+// =============================================================================
+
 app.listen(PORT, function() {
-    console.log("App listening on PORT: " + PORT);
-});
-
-app.get('/', (req,res) => {
-    res.sendFile(path.join(__dirname, "public/index.html"))
-});
-
-app.get("/api/notes", function (req, res) {
-    var newNote = req.body;
-
-    //get the saved data
-    var noteArray = JSON.parse(fs.readFileSync(path.join(__dirname, "db/db.json")));
-    noteArray.push(newNote);
-    
-    var reformattedData = JSON.stringify(noteArray);
-    fs.writeFileSync(path.join(__dirname, "db/db.json"), reformattedData);
-
-    res.send("Success");
-});
-
-app.delete("/api/note/:id", function (req, res) {
-    let id = req.params.id;
-    
-    var noteArray = JSON.parse(fs.readFileSync(path.join(__dirname, "db/db.json")));
-
-    //creates a new note array of every note, except the one that's being deleted
-    noteArray = noteArray.filter((value) => { 
-        if(value.id != id){
-            return value;
-        }
-    });
-
-    var reformattedData = JSON.stringify(noteArray);
-    fs.writeFileSync(path.join(__dirname, "db/db.json"), reformattedData);
-
-    res.send("Success");
+  console.log("App listening on PORT: " + PORT);
 });
