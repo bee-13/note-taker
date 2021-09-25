@@ -1,6 +1,6 @@
 # note-taker
 
-This app alows you to take notes and saves the notes into a server.
+This app alows you to take notes and saves the notes into a server. You can add or remove the notes as needed.
 
 
 https://enigmatic-cove-92228.herokuapp.com
